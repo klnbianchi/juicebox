@@ -2,12 +2,17 @@ const { Client } = require('pg');
 const client = new Client('postgres://localhost:5432/juicebox-dev');
 
 async function getAllUsers() {
-    const { rows } = await client.query(
-        `SELECT id, username, name, location, active
+    try {
+      const { rows } = await client.query(`
+        SELECT id, username, name, location, active 
         FROM users;
-        `);
-    return rows;
-}
+      `);
+  
+      return rows;
+    } catch (error) {
+      throw error;
+    }
+  }
 
 async function createUser({
     username,
@@ -92,12 +97,10 @@ async function createPost({
 }
 
 async function updatePost(id, fields = {}) {
-    // build the set string
     const setString = Object.keys(fields).map(
       (key, index) => `"${ key }"=$${ index + 1 }`
     ).join(', ');
   
-    // return early if this is called without fields
     if (setString.length === 0) {
       return;
     }
@@ -130,7 +133,7 @@ async function getAllPosts() {
 
 async function getPostsByUser(userId) {
     try {
-        const { rows } = client.query(`
+        const { rows } = await client.query(`
         SELECT * 
         FROM posts
         WHERE "authorId"=${userId};
