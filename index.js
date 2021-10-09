@@ -13,7 +13,7 @@ server.use(morgan('dev'));
 
 server.use('/api', apiRouter);
 
-const {client} = require('./db');
+const { client } = require('./db');
 client.connect();
 
 server.listen(PORT, () => {
